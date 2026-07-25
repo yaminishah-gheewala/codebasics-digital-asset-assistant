@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Codebasics Digital Asset Assistant</title>
+<style>
+  :root{ --navy:#1A1F3C; --gold:#F2B900; --teal:#0E5A57; --ink:#242424; --grey:#5b6070;
+         --line:#e4e7ef; --bg:#f6f7fb; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:"Segoe UI",Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  header{ background:var(--navy); color:#fff; padding:16px 22px; display:flex; align-items:center; gap:14px; }
+  header .logo{ width:20px; height:20px; background:var(--gold); }
+  header h1{ font-size:18px; margin:0; font-weight:700; }
+  header .tag{ color:#c9cede; font-size:13px; }
+  .identity{ background:#fff8dc; border-bottom:1px solid #ecdd9a; color:#6b5b00;
+             font-size:12.5px; padding:7px 22px; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:22px; }
+  .searchbar{ display:flex; gap:10px; }
+  .searchbar input{ flex:1; padding:13px 15px; font-size:16px; border:2px solid var(--navy);
+                    border-radius:10px; outline:none; }
+  .searchbar button{ padding:0 22px; font-size:15px; font-weight:700; color:#fff;
+                     background:var(--teal); border:none; border-radius:10px; cursor:pointer; }
+  .examples{ margin:12px 0 4px; font-size:13px; color:var(--grey); }
+  .chip{ display:inline-block; background:#fff; border:1px solid var(--line); border-radius:20px;
+         padding:5px 12px; margin:4px 6px 4px 0; cursor:pointer; font-size:13px; }
+  .chip:hover{ border-color:var(--teal); color:var(--teal); }
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-top:14px;
+            font-size:13px; color:var(--grey); }
+  .toolbar a,.toolbar label{ cursor:pointer; }
+  .note{ background:#fff3cd; border:1px solid #ffe08a; border-radius:8px; padding:10px 14px;
+         margin:16px 0; font-size:14px; }
+  .blocked{ background:#f8d7da; border-color:#f1aeb5; color:#611a20; }
+  .results{ margin-top:8px; }
+  .card{ display:flex; gap:16px; background:#fff; border:1px solid var(--line); border-radius:12px;
+         padding:14px; margin-bottom:14px; }
+  .thumb{ width:150px; height:100px; border-radius:8px; object-fit:cover; background:#eef; flex:none; }
+  .ph{ width:150px; height:100px; border-radius:8px; flex:none; display:flex; align-items:center;
+       justify-content:center; color:#fff; font-weight:700; font-size:13px; text-align:center; padding:6px; }
+  .card h3{ margin:0 0 4px; font-size:16px; }
+  .meta{ font-size:12.5px; color:var(--grey); margin:2px 0; }
+  .why{ font-size:13px; color:#0E3A38; background:#eafaf0; border-radius:6px; padding:4px 8px;
+        display:inline-block; margin-top:6px; }
+  .badges span{ display:inline-block; font-size:11.5px; padding:3px 9px; border-radius:20px; margin:6px 6px 0 0; }
+  .conf-High{ background:#d7f5e3; color:#1d7a4d; }
+  .conf-Medium{ background:#fff0cc; color:#8a6d00; }
+  .conf-Low{ background:#f1f1f4; color:#666; }
+  .tag{ background:#eef1fb; color:#39508f; }
+  .final{ background:#1d7a4d; color:#fff; }
+  .actions{ margin-top:8px; }
+  .actions button{ font-size:12px; border:1px solid var(--line); background:#fbfbfe; border-radius:6px;
+                   padding:5px 10px; margin-right:6px; cursor:pointer; }
+  .actions button:hover{ border-color:var(--teal); }
+  .path{ font-family:Consolas,monospace; font-size:12px; color:#7a7f8c; word-break:break-all; }
+  footer{ text-align:center; color:#9aa; font-size:12px; padding:20px; }
+  dialog{ border:none; border-radius:12px; padding:0; max-width:700px; width:90%; }
+  .audit{ padding:18px; }
+  .audit pre{ background:#0f1226; color:#cfe; padding:12px; border-radius:8px; max-height:50vh;
+              overflow:auto; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"></div>
+  <h1>Digital Asset Assistant</h1>
+  <span class="tag">· Codebasics — prototype</span>
+</header>
+<div class="identity">
+  🤖 You are talking to an <b>AI assistant</b>. Results are <b>suggestions</b> ranked from assets you
+  already have access to — it never invents files, and a human confirms the final version.
+</div>
+
+<div class="wrap">
+  <div class="searchbar">
+    <input id="q" placeholder="Describe what you need… e.g. the final Power BI course thumbnail"
+           autofocus onkeydown="if(event.key==='Enter')go()"/>
+    <button onclick="go()">Search</button>
+  </div>
+  <div class="examples">Try:
+    <span class="chip" onclick="ex(this)">final Power BI course thumbnail</span>
+    <span class="chip" onclick="ex(this)">picture of Dhaval and Hemanand together</span>
+    <span class="chip" onclick="ex(this)">data analyst video</span>
+    <span class="chip" onclick="ex(this)">linear regression photo</span>
+  </div>
+  <div class="toolbar">
+    <div>
+      <label>View as:
+        <select id="role" onchange="setRole()">
+          <option value="member">Team member</option>
+          <option value="admin">Admin (sees restricted)</option>
+        </select>
+      </label>
+      &nbsp;·&nbsp; <span id="state"></span>
+    </div>
+    <a onclick="showAudit()">📋 View audit log</a>
+  </div>
+
+  <div id="msg"></div>
+  <div id="results" class="results"></div>
+</div>
+
+<dialog id="auditDlg">
+  <div class="audit">
+    <h3 style="margin-top:0">Audit log (governance)</h3>
+    <p style="font-size:13px;color:#5b6070">Every search and human action is logged so the AI is accountable and can be checked.</p>
+    <pre id="auditBody">…</pre>
+    <div style="text-align:right"><button onclick="auditDlg.close()">Close</button></div>
+  </div>
+</dialog>
+
+<footer>Prototype · pure-Python TF-IDF search over a locally-built index · guard rails from the AI PRD are enforced server-side.</footer>
+
+<script>
+const TYPE_COLORS = { "Slide deck":"#6b3fa0","PDF document":"#b02a37","Thumbnail":"#0E5A57",
+  "Thumbnail / photo":"#0E5A57","Image / photo":"#2563aa","Banner":"#c9922b","Infographic":"#2e8b57",
+  "Logo":"#1A1F3C","Promo card":"#c9922b","Social post":"#c0398a" };
+function colorFor(t){ if(t&&t.indexOf("Public link")===0) return "#d35400"; return TYPE_COLORS[t]||"#5b6070"; }
+
+async function go(){
+  const q = document.getElementById('q').value.trim();
+  const msg = document.getElementById('msg'); const box = document.getElementById('results');
+  msg.innerHTML=''; box.innerHTML='';
+  if(!q) return;
+  const r = await fetch('/api/search?q='+encodeURIComponent(q));
+  const d = await r.json();
+  if(d.disabled){ msg.innerHTML='<div class="note">'+d.message+'</div>'; return; }
+  if(d.blocked){ msg.innerHTML='<div class="note blocked">🛡️ '+d.message+'</div>'; return; }
+  if(d.ambiguous){
+    msg.innerHTML='<div class="note">🤔 <b>Several strong matches</b> — this request is a bit ambiguous. '+
+      'The closest is shown first; please refine (e.g. add the topic, type, or “final”) or pick from the list below.</div>';
+  }
+  if(!d.results.length){ msg.innerHTML='<div class="note">No matching asset found. The assistant won’t invent one — try describing it differently.</div>'; return; }
+  box.innerHTML = d.results.map(card).join('');
+}
+function ex(el){ document.getElementById('q').value = el.textContent; go(); }
+
+function card(a){
+  const thumb = a.thumb
+    ? `<img class="thumb" src="/thumb/${a.thumb}" alt=""/>`
+    : `<div class="ph" style="background:${colorFor(a.asset_type)}">${a.asset_type}</div>`;
+  const finalBadge = a.is_final ? `<span class="final">✓ FINAL</span>` : '';
+  const versions = a.family_size>1 ? `<span class="tag">${a.family_size} versions in family</span>` : '';
+  const tags = (a.topics||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+  const link = a.url ? `<div class="meta">🔗 <a href="${a.url}" target="_blank">${a.url}</a></div>`
+                     : `<div class="path">${a.rel_path}</div>`;
+  const prov = a.author ? `<div class="meta">by ${a.author}${a.created?(' · '+a.created.slice(0,10)):''}</div>` : '';
+  return `<div class="card">
+    ${thumb}
+    <div style="flex:1">
+      <h3>${a.title} ${finalBadge}</h3>
+      <div class="meta">${a.asset_type} · ${a.source}</div>
+      ${prov}${link}
+      <div class="why">✅ ${a.why}</div>
+      <div class="badges">
+        <span class="conf-${a.confidence}">${a.confidence} confidence</span>
+        ${versions} ${tags}
+      </div>
+      <div class="actions">
+        <button onclick='markFinal(${JSON.stringify(a.family)}, ${JSON.stringify(a.id)})'>Mark this as final</button>
+        <button onclick='correctTag(${JSON.stringify(a.id)})'>Add / fix a tag</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function markFinal(family,id){
+  await fetch('/api/mark_final',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({family,id})});
+  go();
+}
+async function correctTag(id){
+  const tag = prompt("Add or correct a tag for this asset (e.g. a person's name, topic):");
+  if(!tag) return;
+  await fetch('/api/correct_tag',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id,tag})});
+  go();
+}
+async function setRole(){
+  const role = document.getElementById('role').value;
+  await fetch('/api/role',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({role})});
+  loadState(); go();
+}
+async function showAudit(){
+  const r = await fetch('/api/audit'); const d = await r.json();
+  document.getElementById('auditBody').textContent = (d.lines||[]).join('\n') || '(empty)';
+  document.getElementById('auditDlg').showModal();
+}
+async function loadState(){
+  const r = await fetch('/api/state'); const d = await r.json();
+  document.getElementById('state').textContent = d.count+' assets indexed'+(d.enabled?'':' · PAUSED');
+  document.getElementById('role').value = d.role;
+}
+loadState();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Runtime-generated state (recreated by the app at runtime)
+index_data/audit.log
+index_data/overrides.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

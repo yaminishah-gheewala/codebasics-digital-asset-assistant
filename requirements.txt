@@ -1,0 +1,15 @@
+# RUNNING the app needs NOTHING here - it uses only the Python standard library.
+#
+# These packages are ONLY needed if you want to REBUILD the index from the raw
+# files (python build_index.py). The shipped index_data/index.json already
+# contains everything, so you can skip this unless you change the dataset.
+#
+#   pip install -r requirements.txt
+#
+# Plus the Tesseract OCR engine on your PATH (optional, for reading text inside
+# images):  https://github.com/UB-Mannheim/tesseract/wiki  (Windows installer)
+
+pillow>=10
+pypdf>=4
+python-pptx>=0.6.23
+openpyxl>=3.1
