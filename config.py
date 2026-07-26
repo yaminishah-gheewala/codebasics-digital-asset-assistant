@@ -13,13 +13,48 @@ import os
 # ---------------------------------------------------------------------------
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# The sample dataset. By default we look one level up from this project folder
-# (this project is meant to live inside the Dataset/ folder). Override with the
-# DAA_DATA env var if your data lives elsewhere.
-DATA_ROOT = os.environ.get(
-    "DAA_DATA",
-    os.path.abspath(os.path.join(PROJECT_DIR, "..")),
-)
+# The sample dataset lives under <DATA_ROOT>/sample_assets/sample_assets.
+# Resolution order:
+#   1. the DAA_DATA env var, if set (explicit override — always wins);
+#   2. one level up from this project (the documented layout);
+#   3. a quick, bounded search of nearby ancestor folders, so the app still
+#      finds the dataset when it sits in a sibling tree (e.g. .../Dataset).
+def _has_assets(root):
+    return os.path.isdir(os.path.join(root, "sample_assets", "sample_assets"))
+
+
+def _resolve_data_root():
+    env = os.environ.get("DAA_DATA")
+    if env:
+        return os.path.abspath(env)
+
+    default_root = os.path.abspath(os.path.join(PROJECT_DIR, ".."))
+    if _has_assets(default_root):
+        return default_root
+
+    # Walk up a few ancestors and look (shallowly) for the dataset.
+    ancestor = PROJECT_DIR
+    for _ in range(5):
+        ancestor = os.path.dirname(ancestor)
+        if not ancestor or ancestor == os.path.dirname(ancestor):
+            break
+        try:
+            for dirpath, dirnames, _files in os.walk(ancestor):
+                if dirpath[len(ancestor):].count(os.sep) >= 4:
+                    dirnames[:] = []          # cap the depth
+                    continue
+                dirnames[:] = [d for d in dirnames if d not in
+                               (".git", "__pycache__", "node_modules", "index_data")
+                               and not d.startswith(".")]
+                if _has_assets(dirpath):
+                    return dirpath
+        except OSError:
+            pass
+
+    return default_root  # give up gracefully; paths just resolve as "not found"
+
+
+DATA_ROOT = _resolve_data_root()
 ASSETS_DIR = os.path.join(DATA_ROOT, "sample_assets", "sample_assets")
 PUBLIC_LINKS_XLSX = os.path.join(DATA_ROOT, "public_links.xlsx")
 

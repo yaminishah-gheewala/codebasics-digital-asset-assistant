@@ -184,6 +184,16 @@ class SearchEngine:
     def _to_result(self, a, score, qterms, overrides):
         fam = a["family"]
         final_id = overrides.get("final", {}).get(fam)
+        # Complete path to the asset: the absolute filesystem path for an
+        # internal file, or the public URL for a link.
+        if a.get("kind") == "link":
+            full_path = a.get("url") or ""
+        else:
+            full_path = os.path.normpath(
+                os.path.join(config.ASSETS_DIR, a.get("rel_path", "")))
+        # File extension (lower-case, no dot) — drives which asset types allow
+        # the human "Mark as final" action.
+        ext = os.path.splitext(a.get("filename", ""))[1].lower().lstrip(".")
         return {
             "id": a["id"],
             "title": a["title"] or a["filename"] or a["url"],
@@ -191,6 +201,8 @@ class SearchEngine:
             "topics": a.get("topics", []) + overrides.get("tags", {}).get(a["id"], []),
             "source": a["source"],
             "rel_path": a["rel_path"],
+            "full_path": full_path,
+            "ext": ext,
             "url": a.get("url"),
             "thumb": a.get("thumb"),
             "author": a.get("author"),

@@ -9,6 +9,7 @@ Endpoints
   GET  /api/search?q=...     -> ranked results (JSON)
   POST /api/mark_final       -> {family, id}  human-confirms the canonical version
   POST /api/correct_tag      -> {id, tag}     human adds/corrects a tag
+  POST /api/open             -> {id}          reveal the asset's folder (local only)
   GET  /api/audit            -> recent audit-log lines (governance)
   POST /api/role             -> {role}        switch member/admin (permission demo)
   GET  /thumb/<file>         -> a thumbnail image
@@ -16,6 +17,7 @@ Endpoints
 
 import json
 import os
+import subprocess
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -32,6 +34,42 @@ def engine():
     if ENGINE is None:
         ENGINE = SearchEngine()
     return ENGINE
+
+
+def open_asset(asset_id, reveal=False):
+    """Open an internal asset, or reveal it in the OS file browser.
+
+    reveal=False -> launch the file in its default app (e.g. PowerPoint).
+    reveal=True  -> open the containing folder with the file selected.
+
+    This only makes sense because the prototype runs locally on the user's own
+    machine. Two guard rails apply: it never touches public links, and it
+    refuses any path that resolves outside the configured asset library.
+    """
+    asset = next((a for a in engine().assets if a.get("id") == asset_id), None)
+    if not asset:
+        return False, "Asset not found in the index."
+    if asset.get("kind") == "link":
+        return False, "This is a public link, not a file — open the URL instead."
+
+    base = os.path.normpath(config.ASSETS_DIR)
+    full = os.path.normpath(os.path.join(base, asset.get("rel_path", "")))
+    if full != base and not full.startswith(base + os.sep):
+        return False, "Blocked: path is outside the asset library."
+    if not os.path.exists(full):
+        return False, f"Not on this machine: {full}"
+
+    guardrails.audit("REVEAL_ASSET" if reveal else "OPEN_ASSET",
+                     f"user={config.CURRENT_USER} id={asset_id} path={full}")
+    try:
+        if reveal:
+            # Open the containing folder with the file selected.
+            subprocess.Popen(["explorer", "/select,", full])
+            return True, "Opening the folder…"
+        os.startfile(full)  # launch in the default app (Windows)
+        return True, "Opening the file…"
+    except Exception as exc:  # never crash the server on an open failure
+        return False, f"Could not open: {exc}"
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -120,6 +158,11 @@ class Handler(BaseHTTPRequestHandler):
             # rebuild vectors so the new tag is searchable immediately
             engine()._load()
             self._send(200, {"ok": True})
+            return
+
+        if path == "/api/open":
+            ok, msg = open_asset(data.get("id", ""), bool(data.get("reveal")))
+            self._send(200, {"ok": ok, "message": msg})
             return
 
         if path == "/api/role":

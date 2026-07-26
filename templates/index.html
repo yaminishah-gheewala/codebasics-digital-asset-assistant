@@ -52,6 +52,8 @@
                    padding:5px 10px; margin-right:6px; cursor:pointer; }
   .actions button:hover{ border-color:var(--teal); }
   .path{ font-family:Consolas,monospace; font-size:12px; color:#7a7f8c; word-break:break-all; }
+  .openlink{ cursor:pointer; color:var(--teal); font-size:13px; font-weight:600; }
+  .openlink:hover{ text-decoration:underline; }
   footer{ text-align:center; color:#9aa; font-size:12px; padding:20px; }
   dialog{ border:none; border-radius:12px; padding:0; max-width:700px; width:90%; }
   .audit{ padding:18px; }
@@ -141,9 +143,21 @@ function card(a){
   const finalBadge = a.is_final ? `<span class="final">✓ FINAL</span>` : '';
   const versions = a.family_size>1 ? `<span class="tag">${a.family_size} versions in family</span>` : '';
   const tags = (a.topics||[]).map(t=>`<span class="tag">${t}</span>`).join('');
-  const link = a.url ? `<div class="meta">🔗 <a href="${a.url}" target="_blank">${a.url}</a></div>`
-                     : `<div class="path">${a.rel_path}</div>`;
+  const link = a.url
+    ? `<div class="meta">🔗 <a href="${a.url}" target="_blank">${a.url}</a></div>`
+    : `<div class="meta">
+         <a class="openlink" title="Open ${a.full_path||a.rel_path}" onclick='openAsset(${JSON.stringify(a.id)}, false, this)'>📂 Open file</a>
+         &nbsp;·&nbsp;
+         <a class="openlink" title="Reveal in ${a.full_path||a.rel_path}" onclick='openAsset(${JSON.stringify(a.id)}, true, this)'>📁 Open folder</a>
+       </div>`;
   const prov = a.author ? `<div class="meta">by ${a.author}${a.created?(' · '+a.created.slice(0,10)):''}</div>` : '';
+  // "Mark as final" only applies to documents & decks (PDF / Word / PowerPoint),
+  // not to images, banners, logos or links.
+  const FINALIZABLE = ['pdf','doc','docx','ppt','pptx'];
+  const canFinal = FINALIZABLE.includes((a.ext||'').toLowerCase());
+  const finalBtn = canFinal
+    ? `<button onclick='markFinal(${JSON.stringify(a.family)}, ${JSON.stringify(a.id)})'>Mark this as final</button>`
+    : '';
   return `<div class="card">
     ${thumb}
     <div style="flex:1">
@@ -156,13 +170,31 @@ function card(a){
         ${versions} ${tags}
       </div>
       <div class="actions">
-        <button onclick='markFinal(${JSON.stringify(a.family)}, ${JSON.stringify(a.id)})'>Mark this as final</button>
+        ${finalBtn}
         <button onclick='correctTag(${JSON.stringify(a.id)})'>Add / fix a tag</button>
       </div>
     </div>
   </div>`;
 }
 
+async function openAsset(id, reveal, el){
+  const orig = el.textContent;
+  el.textContent = '⏳ Opening…';
+  try{
+    const r = await fetch('/api/open',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id, reveal})});
+    if(r.status===404){ el.textContent='⚠ Restart the app (endpoint missing)'; el.style.color='#b02a37'; }
+    else{
+      const d = await r.json();
+      el.textContent = (d.ok ? '✓ '+d.message : '⚠ '+(d.message||'Failed'));
+      el.style.color = d.ok ? '#1d7a4d' : '#b02a37';
+    }
+  }catch(e){
+    el.textContent = '⚠ Could not reach the server';
+    el.style.color = '#b02a37';
+  }
+  setTimeout(()=>{ el.textContent = orig; el.style.color=''; }, 3000);
+}
 async function markFinal(family,id){
   await fetch('/api/mark_final',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({family,id})});
