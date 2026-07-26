@@ -1,0 +1,42 @@
+Codebasics is a youtube channel started in 2016.  as a YouTube channel it has grown into a learning platform
+serving learners worldwide through courses, bootcamps, and community programs. A decade of creation
+leaves a footprint: thousands of assets (course videos, YouTube tutorials, thumbnails, slide decks, PDFs,
+promotional creatives, scripts) made by multiple teams and scattered across drives, folders, and platforms.
+Finding anything is the problem. Naming is inconsistent ("final", "final_v2", "FINAL_USE_THIS"), the same
+asset lives in three places in four versions, and often only the person who made a file knows where it is, or that
+it exists at all. A file's name rarely says what's inside it, and nobody can search inside a video or an image
+anyway.
+So teams search manually, sometime give up and recreate from scratch which adds more time to build but a thumbnail that already existed, a deck someone built last year, an
+intro video re-edited from scratch. The duplication of effort is quiet but constant, and every new course,
+campaign, and batch adds to the pile. The cost isn't just hours: it's inconsistent branding, outdated versions
+going public, and creative energy spent remaking instead of making
+
+We have a sample data set as follows and stored in my hard drive (C:\Users\cgheewal\Downloads\AI PM Training\Assignments\Capstone_Project\Capstone Projects\Codebasics_Digital Asset Assistant\Dataset) but in real time, it will be in codebasics one drive:  
+
+We have # Codebasics Asset Library Dataset — Data Dictionary
+
+This dataset gives you a small, tangible slice of Codebasics' content library. The **sample files are openable stand-ins** for the real thing; the **public links are real** Codebasics YouTube videos, LinkedIn posts, and website pages. Treat **"today" as 2026-07-10**.
+
+> **Important — there is no catalog.** You will not find an inventory, index, or master list of assets anywhere in this dataset, because nobody at Codebasics has one. Files live scattered across drives, laptops, and tools with no single record of what exists, where it is, or which version is final. That absence **is** the problem. If your solution needs an inventory to work, then building one (or mocking one up) is part of your job — not something you get for free.
+
+## What we have
+
+### 1. `sample_assets/` — 28 representative files
+Real, openable files (18 images, 3 PDFs, 7 PowerPoint decks). They stand in for the **thousands** of real files scattered across the team's storage; more genuine Codebasics assets will be shared during the cohort.
+
+- 11 files sit loose at the top level (5 images, 3 PDFs, 3 promotional images/banners).
+- `Decks/` — 7 course/webinar PowerPoint decks (e.g. `what_is_ML.pptx`, `star_schema.pptx`, `svm.pptx`).
+- `Thumbnails_and_Images/` — 10 thumbnail and event photos (e.g. `dhaval.JPG`, `svm_thumbnail.png`, `what_is_power_bi_thumbnail.png`).
+
+### 2. `public_links.xlsx` — 59 real public assets
+Actual Codebasics YouTube tutorials, LinkedIn posts (login may be required), and website pages. Public content is part of the asset problem too — teams forget what has already been published.
+
+Breakdown by source: 32 YouTube, 21 LinkedIn, 6 website.
+
+| Column | Meaning |
+|---|---|
+| Title / Description | What it is |
+| url | Link to the public asset |
+| source_type | youtube, linkedin, or website |
+
+I want claude to help me create the Product requirement document for the interface that can Start by trying to answer, with only what's here: "find me the final Power BI course thumbnail. or user can search, give me the picture of Dhaval and Hemanand together, or give me the link to Data analyst video, or search the photo of linear regression.
