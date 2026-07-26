@@ -15,7 +15,18 @@ enforced in code (see the mapping table below).
 ## 1. Quick start (no installation)
 
 The app runs on the **Python standard library only** and ships with a
-**pre-built index** of your sample dataset, so there is nothing to install.
+**pre-built index** (`index_data/`) of the sample dataset — so there is nothing
+to install and **no sample-data folder to download**. Just run it.
+
+**Got this from GitHub?** After `git clone …` (or unzipping the **Code → Download
+ZIP**), run:
+
+```bash
+cd codebasics-digital-asset-assistant
+python app.py
+```
+
+**Running from this folder directly?**
 
 ```bash
 cd digital_asset_assistant
@@ -24,16 +35,18 @@ python app.py
 
 Then open **http://127.0.0.1:8080** in your browser and try the example chips.
 
-> Requires Python 3.8+. If `python` isn't found, try `python3`.
+> Requires Python 3.8+. If `python` isn't found, try `python3`. (An internet
+> connection just makes the brand fonts load; the app works fine offline.)
 
 That's it. The four example queries, the confidence badges, ambiguity handling,
-duplicate detection, permission filtering, human-in-the-loop tagging, one-click
-**open file / open folder**, injection blocking, and the audit log all work
-immediately.
+duplicate detection, permission filtering, human-in-the-loop tagging, injection
+blocking, and the audit log all work immediately — **no dataset required.**
 
-> **Opening files** works when the original sample dataset is present on this
-> machine. The app finds it automatically (see §5); if it lives elsewhere, set
-> the `DAA_DATA` env var. Search, tagging and every guard rail work regardless.
+> ℹ️ **The only feature that needs the raw dataset is “📂 Open file / 📁 Open
+> folder,”** which opens the original asset on disk. Without the dataset it shows
+> a harmless *“Not on this machine”* message; everything else works fully. If the
+> dataset *is* present, the app auto-detects it, or set the `DAA_DATA` env var
+> (see §5).
 
 ---
 

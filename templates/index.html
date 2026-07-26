@@ -4,68 +4,101 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Codebasics Digital Asset Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
 <style>
-  :root{ --navy:#1A1F3C; --gold:#F2B900; --teal:#0E5A57; --ink:#242424; --grey:#5b6070;
-         --line:#e4e7ef; --bg:#f6f7fb; }
+  /* Codebasics-inspired theme: clean light UI, teal-green primary, rounded cards.
+     Swap the --brand values below for exact hex from codebasics.io if desired. */
+  :root{
+    --brand:#12A594; --brand-dark:#0E857A; --brand-soft:#e7f6f3;
+    --ink:#16232b; --muted:#5b6b73; --line:#e7ebee;
+    --bg:#f4f8f7; --card:#ffffff; --gold:#F2B900;
+    --shadow:0 1px 2px rgba(16,40,37,.05), 0 10px 30px rgba(16,40,37,.06);
+  }
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:"Segoe UI",Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
-  header{ background:var(--navy); color:#fff; padding:16px 22px; display:flex; align-items:center; gap:14px; }
-  header .logo{ width:20px; height:20px; background:var(--gold); }
-  header h1{ font-size:18px; margin:0; font-weight:700; }
-  header .tag{ color:#c9cede; font-size:13px; }
-  .identity{ background:#fff8dc; border-bottom:1px solid #ecdd9a; color:#6b5b00;
-             font-size:12.5px; padding:7px 22px; }
-  .wrap{ max-width:1080px; margin:0 auto; padding:22px; }
+  body{ margin:0; font-family:"Inter","Segoe UI",Helvetica,Arial,sans-serif; color:var(--ink);
+        background:var(--bg); -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:"Poppins","Segoe UI",sans-serif; letter-spacing:-.2px; }
+
+  header{ background:#fff; border-bottom:1px solid var(--line); padding:14px 24px;
+          display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:20; }
+  header .logo{ font-family:"Poppins",sans-serif; font-weight:700; font-size:21px; color:var(--ink);
+                letter-spacing:-.5px; }
+  header .logo b{ color:var(--brand); font-weight:700; }
+  header h1{ font-size:14px; margin:0; font-weight:600; color:var(--muted);
+             border-left:1px solid var(--line); padding-left:14px; }
+  header .tag{ margin-left:auto; color:#fff; background:var(--brand); font-size:11px; font-weight:600;
+               letter-spacing:.4px; text-transform:uppercase; padding:5px 11px; border-radius:20px; }
+
+  .identity{ background:var(--brand-soft); border-bottom:1px solid #cfe9e2; color:#0c5c50;
+             font-size:12.5px; padding:9px 24px; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:26px 22px 8px; }
   .searchbar{ display:flex; gap:10px; }
-  .searchbar input{ flex:1; padding:13px 15px; font-size:16px; border:2px solid var(--navy);
-                    border-radius:10px; outline:none; }
-  .searchbar button{ padding:0 22px; font-size:15px; font-weight:700; color:#fff;
-                     background:var(--teal); border:none; border-radius:10px; cursor:pointer; }
-  .examples{ margin:12px 0 4px; font-size:13px; color:var(--grey); }
+  .searchbar input{ flex:1; padding:15px 17px; font-size:16px; border:1.5px solid var(--line);
+                    border-radius:12px; outline:none; background:#fff;
+                    transition:border-color .15s, box-shadow .15s; }
+  .searchbar input:focus{ border-color:var(--brand); box-shadow:0 0 0 4px var(--brand-soft); }
+  .searchbar button{ padding:0 26px; font-size:15px; font-weight:600; color:#fff;
+                     background:var(--brand); border:none; border-radius:12px; cursor:pointer;
+                     transition:background .15s; }
+  .searchbar button:hover{ background:var(--brand-dark); }
+
+  .examples{ margin:14px 0 4px; font-size:13px; color:var(--muted); }
   .chip{ display:inline-block; background:#fff; border:1px solid var(--line); border-radius:20px;
-         padding:5px 12px; margin:4px 6px 4px 0; cursor:pointer; font-size:13px; }
-  .chip:hover{ border-color:var(--teal); color:var(--teal); }
-  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-top:14px;
-            font-size:13px; color:var(--grey); }
+         padding:6px 13px; margin:4px 6px 4px 0; cursor:pointer; font-size:13px; color:var(--ink);
+         transition:all .15s; }
+  .chip:hover{ border-color:var(--brand); color:var(--brand); background:var(--brand-soft); }
+
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-top:16px;
+            font-size:13px; color:var(--muted); }
   .toolbar a,.toolbar label{ cursor:pointer; }
-  .note{ background:#fff3cd; border:1px solid #ffe08a; border-radius:8px; padding:10px 14px;
-         margin:16px 0; font-size:14px; }
-  .blocked{ background:#f8d7da; border-color:#f1aeb5; color:#611a20; }
+  .toolbar a{ color:var(--brand-dark); font-weight:600; }
+  .toolbar select{ font-family:inherit; padding:4px 7px; border:1px solid var(--line); border-radius:7px;
+                   color:var(--ink); background:#fff; }
+
+  .note{ background:#fff8e6; border:1px solid #f4dfa0; border-radius:10px; padding:11px 15px;
+         margin:16px 0; font-size:14px; color:#6b5300; }
+  .blocked{ background:#fdecee; border-color:#f4b8bf; color:#8a2530; }
+
   .results{ margin-top:8px; }
-  .card{ display:flex; gap:16px; background:#fff; border:1px solid var(--line); border-radius:12px;
-         padding:14px; margin-bottom:14px; }
-  .thumb{ width:150px; height:100px; border-radius:8px; object-fit:cover; background:#eef; flex:none; }
-  .ph{ width:150px; height:100px; border-radius:8px; flex:none; display:flex; align-items:center;
-       justify-content:center; color:#fff; font-weight:700; font-size:13px; text-align:center; padding:6px; }
-  .card h3{ margin:0 0 4px; font-size:16px; }
-  .meta{ font-size:12.5px; color:var(--grey); margin:2px 0; }
-  .why{ font-size:13px; color:#0E3A38; background:#eafaf0; border-radius:6px; padding:4px 8px;
-        display:inline-block; margin-top:6px; }
-  .badges span{ display:inline-block; font-size:11.5px; padding:3px 9px; border-radius:20px; margin:6px 6px 0 0; }
+  .card{ display:flex; gap:16px; background:var(--card); border:1px solid var(--line); border-radius:16px;
+         padding:16px; margin-bottom:14px; box-shadow:var(--shadow);
+         transition:transform .12s, box-shadow .12s; }
+  .card:hover{ box-shadow:0 2px 4px rgba(16,40,37,.06), 0 16px 40px rgba(16,40,37,.10); }
+  .thumb{ width:158px; height:104px; border-radius:12px; object-fit:cover; background:#eef; flex:none; }
+  .ph{ width:158px; height:104px; border-radius:12px; flex:none; display:flex; align-items:center;
+       justify-content:center; color:#fff; font-weight:600; font-size:13px; text-align:center; padding:6px; }
+  .card h3{ margin:0 0 4px; font-size:17px; font-weight:600; }
+  .meta{ font-size:12.5px; color:var(--muted); margin:2px 0; }
+  .why{ font-size:13px; color:#0c5c50; background:var(--brand-soft); border-radius:8px; padding:5px 10px;
+        display:inline-block; margin-top:8px; }
+  .badges span{ display:inline-block; font-size:11.5px; font-weight:500; padding:3px 10px; border-radius:20px; margin:8px 6px 0 0; }
   .conf-High{ background:#d7f5e3; color:#1d7a4d; }
   .conf-Medium{ background:#fff0cc; color:#8a6d00; }
-  .conf-Low{ background:#f1f1f4; color:#666; }
-  .tag{ background:#eef1fb; color:#39508f; }
-  .final{ background:#1d7a4d; color:#fff; }
-  .actions{ margin-top:8px; }
-  .actions button{ font-size:12px; border:1px solid var(--line); background:#fbfbfe; border-radius:6px;
-                   padding:5px 10px; margin-right:6px; cursor:pointer; }
-  .actions button:hover{ border-color:var(--teal); }
+  .conf-Low{ background:#eef1f2; color:#5b6b73; }
+  .tag{ background:var(--brand-soft); color:var(--brand-dark); }
+  .final{ background:var(--brand-dark); color:#fff; }
+  .actions{ margin-top:10px; }
+  .actions button{ font-size:12.5px; border:1px solid var(--line); background:#fff; border-radius:8px;
+                   padding:6px 12px; margin-right:6px; cursor:pointer; color:var(--ink); transition:all .15s; }
+  .actions button:hover{ border-color:var(--brand); color:var(--brand-dark); background:var(--brand-soft); }
   .path{ font-family:Consolas,monospace; font-size:12px; color:#7a7f8c; word-break:break-all; }
-  .openlink{ cursor:pointer; color:var(--teal); font-size:13px; font-weight:600; }
+  .openlink{ cursor:pointer; color:var(--brand-dark); font-size:13px; font-weight:600; }
   .openlink:hover{ text-decoration:underline; }
-  footer{ text-align:center; color:#9aa; font-size:12px; padding:20px; }
-  dialog{ border:none; border-radius:12px; padding:0; max-width:700px; width:90%; }
-  .audit{ padding:18px; }
-  .audit pre{ background:#0f1226; color:#cfe; padding:12px; border-radius:8px; max-height:50vh;
+  footer{ text-align:center; color:#9aa8a4; font-size:12px; padding:26px; }
+  dialog{ border:none; border-radius:16px; padding:0; max-width:700px; width:90%; box-shadow:var(--shadow); }
+  .audit{ padding:20px; }
+  .audit pre{ background:#0c2b27; color:#bdeee3; padding:14px; border-radius:10px; max-height:50vh;
               overflow:auto; font-size:12px; }
 </style>
 </head>
 <body>
 <header>
-  <div class="logo"></div>
+  <div class="logo">code<b>basics</b></div>
   <h1>Digital Asset Assistant</h1>
-  <span class="tag">· Codebasics — prototype</span>
+  <span class="tag">Prototype</span>
 </header>
 <div class="identity">
   🤖 You are talking to an <b>AI assistant</b>. Results are <b>suggestions</b> ranked from assets you
